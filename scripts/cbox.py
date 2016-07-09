@@ -61,14 +61,14 @@ def print_vals(val, indent=0):
 				print "{}{}:".format(' '*indent, key)
 				print_vals(val[key], indent+2)
 			elif isinstance(val[key], list):
-				print "{}{}: {}".format(' '*indent, key, ", ".join(val[key]))
+				print "{}{}: {}".format(' '*indent, key, ", ".join(val[key]) if val[key] else "** NOT SET **")
 			else:
-				print"{}{}: {}".format(' '*indent, key, val[key])
+				print"{}{}: {}".format(' '*indent, key, val[key] if val[key] else "** NOT SET **")
 
 	elif isinstance(val, list):
-		print "{}{}".format(' '*indent, ", ".join(val))
+		print "{}{}".format(' '*indent, ", ".join(val) if val else "** NOT SET **")
 	else:
-		print"{}{}".format(' '*indent, val)
+		print"{}{}".format(' '*indent, val if val else "** NOT SET **")
 
 def get_val(keys, data):
 	result = {}
