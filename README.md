@@ -26,7 +26,7 @@ Rather than elect for Unity's continuous builds on any changes, we have a script
 Bump the version numbers on our projects. Not only updates the file, but safely commits the file to git as well, stashing/restoring any changes you may have currently had.
 
 #### Usage
-    bump_version.py [-h] (--major | --minor | --patch | --set version)
+    $ bump_version.py [-h] (--major | --minor | --patch | --set version)
         --major        bump the major version.
         --minor        bump the minor version.
         --patch        bump the patch version.
