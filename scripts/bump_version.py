@@ -20,17 +20,7 @@ def find_file(search_file, parents=[]):
 
 	return None
 
-def load_file(search_file, parents=[]):
-	result = None
-	path = find_file(search_file, parents)
-
-	if path:
-		with open(path) as version_json:
-			result = json.load(version_json)
-
-	return path, result
-
-def update_file(path, ver):
+def update_file(ver, path):
 	ver.saveToFile(path)	
 
 	print "> successfully updated to version {}".format(ver)
@@ -48,19 +38,15 @@ def main():
 	args = parser.parse_args()
 
 	# first, ensure that we can find version_data below this directory
-	path, data = load_file('version_data.json', ['Resources', 'AppInfo'])
+	path = find_file('version_data.json', ['Resources', 'AppInfo'])
 
-	if not data:
-		print "error: could not find {}".format(search_file)
-		sys.exit(-1)
-
-	curver = Version.from_data(data)
+	curver = GameVersion.from_path(path)
 
 	if args.set:
-		newver = Version.from_data(args.set)
+		newver = GameVersion.from_data(args.set)
 
 		if newver <= curver:
-			print "error: ({}) does not increment the current version ({})".format(newver, curver)
+			print "> error: ({}) does not increment the current version ({})".format(newver, curver)
 			sys.exit(-1)
 		else:
 			update_file(path, newver)
@@ -75,7 +61,7 @@ def main():
 		elif args.patch:
 			newver.bumpPatch()
 
-		update_file(path, newver)
+		update_file(newver, path)
 
 
 if __name__ == '__main__':
