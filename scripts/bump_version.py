@@ -29,7 +29,7 @@ def update_file(ver, path):
 def main():
 	# parse the arguments
 	parser = argparse.ArgumentParser(description='Increment the project version.')
-	group = parser.add_mutually_exclusive_group(required=True)
+	group = parser.add_mutually_exclusive_group()
 	group.add_argument('--major', action='store_true', help='bump the major version.')
 	group.add_argument('--minor', action='store_true', help='bump the minor version.')
 	group.add_argument('--patch', action='store_true', help='bump the patch version.')
@@ -51,7 +51,7 @@ def main():
 		else:
 			update_file(path, newver)
 
-	else:
+	elif args.major or args.minor or args.patch:
 		newver = copy.copy(curver)
 
 		if args.major:
@@ -62,6 +62,9 @@ def main():
 			newver.bumpPatch()
 
 		update_file(newver, path)
+
+	else:
+		print "> current version: {}".format(curver)
 
 
 if __name__ == '__main__':
