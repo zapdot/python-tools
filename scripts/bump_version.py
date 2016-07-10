@@ -18,7 +18,8 @@ def find_file(search_file, parents=[]):
 
 	    	return abspath
 
-	return None
+	print "> error: '{}' not found with parent dirs: '{}'".format(search_file, "/".join(parents))
+	sys.exit(-1)
 
 def update_file(ver, path):
 	ver.saveToFile(path)	
