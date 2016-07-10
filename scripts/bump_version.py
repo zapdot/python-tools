@@ -43,7 +43,7 @@ def main():
 	curver = GameVersion.from_path(path)
 
 	if args.set:
-		newver = GameVersion.from_data(args.set)
+		newver = GameVersion.from_string(args.set)
 
 		if newver <= curver:
 			print "> error: ({}) does not increment the current version ({})".format(newver, curver)
