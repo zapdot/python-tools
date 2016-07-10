@@ -25,6 +25,14 @@ Rather than elect for Unity's continuous builds on any changes, we have a script
 ### scripts/bump_version.py
 Bump the version numbers on our projects. Not only updates the file, but safely commits the file to git as well, stashing/restoring any changes you may have currently had.
 
+#### Usage
+    bump_version.py [-h] (--major | --minor | --patch | --set version)
+        --major        bump the major version.
+        --minor        bump the minor version.
+        --patch        bump the patch version.
+        --set version  set the version to a higher number
+
+- Absence of all arguments will print the current version.
 - Expects to find `version_data.json`, with a parent path of `Resources/AppInfo`
 - `version_data.json` should be formatted as such:
 ```
@@ -39,19 +47,16 @@ Bump the version numbers on our projects. Not only updates the file, but safely 
 Terminal-based json editor for ConfigBox.
 
 #### Usage
-**cbox.py** -- _Manage configurations for the local user._
-
-    positional arguments:
-      id                    alphanumeric id for your config.
-      key                   key(s) to traverse the data
-
-    optional arguments:
-      -h, --help            show this help message and exit
-      --value val           set the path to a value
-      --list val [val ...]  set the path to a list of values
-      --template name       merges in any new keys from template, warns of
-                            obsolete keys.
-      --setup path          setup the given path for ConfigBox.
+    $ cbox.py [-h] id [key [key ...]] 
+        positional arguments:
+          id                    alphanumeric id for your config.
+          key                   key(s) to traverse the data
+        optional arguments:
+          --value val           set the path to a value
+          --list val [val ...]  set the path to a list of values
+          --template name       merges in any new keys from template, warns of
+                                obsolete keys.
+          --setup path          setup the given path for ConfigBox.
 
 #### Examples:
 
