@@ -5,15 +5,15 @@ import os.path
 from zaplib.api.cloudbuild import CloudBuildAPI
 from zaplib.api.github import GitHubAPI
 
-def get_dirty_targets():
+def get_dirty_targets(latest_hash):
 	result = []
 
-	develop_sha = github.commit("develop").sha
 	build_targets = [bt for bt in cb.get_buildtargets() if bt['enabled']]
 
 	for bt in build_targets:
 		build_info = bt.get('build', None)
-		if build_info and build_info['sha'] == develop_sha:
+
+		if build_info and build_info['sha'] == latest_hash:
 			continue
 		else:
 			result.append(bt['buildtargetid'])
@@ -35,7 +35,8 @@ if __name__ == '__main__':
 	github = GitHubAPI(cbox_id)
 
 	# get targets that need builds
-	targets = get_dirty_targets()
+	develop_sha = github.commit("develop").sha
+	targets = get_dirty_targets(develop_sha)
 
 	for target in targets:
 		cb.create_build(target)
