@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 import sys
 import os.path
+from pprint import pprint
 
 from zaplib.api.cloudbuild import CloudBuildAPI
 from zaplib.api.github import GitHubAPI
@@ -14,7 +15,7 @@ def get_dirty_targets(latest_hash, filter=None):
 		build_targets = [bt for bt in build_targets if filter in bt['buildtargetid']]
 
 	for bt in build_targets:
-		build_info = bt.get('build', None)
+		build_info = bt.get('last_build', None)
 
 		if build_info and build_info['sha'] == latest_hash:
 			continue
@@ -46,4 +47,4 @@ if __name__ == '__main__':
 	targets = get_dirty_targets(develop_sha, target_filter)
 
 	for target in targets:
-		cb.create_build(target)				
+		cb.create_build(target)			
