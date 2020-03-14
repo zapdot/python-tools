@@ -32,29 +32,46 @@ if requestIDIndex == -1:
 requestID = uploadOutput[requestIDIndex + len("RequestUUID = "):].strip()
 print "Request ID: ", requestID
 
-# Every 15 minutes we poll the Apple servers for a result.
-while True:
-	pollOutput = subprocess.check_output(['xcrun', 'altool', '--notarization-info', requestID, '-u', appleID, '-p', appSpecificPassword], stderr=subprocess.STDOUT)
-	print "NotarizeAndPollAppleServers.py: poll output: "
-	print pollOutput
-	
-	# check for successful notarization
-	pollOutputLower = pollOutput.lower()
-	if "package approved" in pollOutputLower:
-		print "NotarizeAndPollAppleServers.py: Notarization succeeded."
-		notarizationReportURLIndex = pollOutput.find("LogFileURL: ")
-		if notarizationReportURLIndex == -1:
-			print "NotarizeAndPollAppleServers.py: Unable to find notarization report URL in output from Apple notarization server."
-		else:
-			notarizationReportURL = pollOutput[notarizationReportURLIndex + len("LogFileURL: "):].splitlines()[0].strip()
-			notarizationReportContents = urllib.urlopen(notarizationReportURL).read()
-			print "NotarizeAndPollAppleServers.py: notarization report: "
-			print notarizationReportContents
-		exit(0)
-		
-	# check for failed notarization
-	elif "fail" in pollOutput or "error" in pollOutputLower and not "in progress" in pollOutputLower:
-		print "NotarizeAndPollAppleServers.py: Notarization failed."
-		exit(-3)
+# Every pollMinutes minutes we poll the Apple servers for a result.
+pollMinutes = 15
+print "NotarizeAndPollAppleServers.py: Upload succeeded.  Will poll for outcome every ", pollMinutes, " minutes."
 
-	time.sleep(15 * 60)
+while True:
+	pollOutput = ""
+	try:
+		pollOutput = subprocess.check_output(['xcrun', 'altool', '--notarization-info', requestID, '-u', appleID, '-p', appSpecificPassword], stderr=subprocess.STDOUT)
+		print "NotarizeAndPollAppleServers.py: poll output: "
+		print pollOutput
+		
+		# check for successful notarization
+		pollOutputLower = pollOutput.lower()
+		if "package approved" in pollOutputLower:
+			print "NotarizeAndPollAppleServers.py: Notarization succeeded."
+			notarizationReportURLIndex = pollOutput.find("LogFileURL: ")
+			if notarizationReportURLIndex == -1:
+				print "NotarizeAndPollAppleServers.py: Unable to find notarization report URL in output from Apple notarization server."
+			else:
+				notarizationReportURL = pollOutput[notarizationReportURLIndex + len("LogFileURL: "):].splitlines()[0].strip()
+				notarizationReportContents = urllib.urlopen(notarizationReportURL).read()
+				print "NotarizeAndPollAppleServers.py: notarization report: "
+				print notarizationReportContents
+			exit(0)
+			
+		# check for failed notarization
+		elif "fail" in pollOutput or "error" in pollOutputLower and not "in progress" in pollOutputLower:
+			print "NotarizeAndPollAppleServers.py: Notarization failed."
+			exit(-3)
+			
+	except subprocess.CalledProcessError, cpe:
+		print "NotarizeAndPollAppleServers.py: Exception in polling:"
+		print str(cpe)
+		print "Output of command:"
+		print cpe.output
+		print "Will try again in ", pollMinutes, " minutes."
+
+	except Exception, e:
+		print "NotarizeAndPollAppleServers.py: Exception in polling:"
+		print str(e)
+		print "Will try again in ", pollMinutes, " minutes."
+		
+	time.sleep(pollMinutes * 60)
