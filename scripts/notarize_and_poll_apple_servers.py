@@ -20,14 +20,20 @@ appSpecificPassword = sys.argv[3]
 appZipPath = sys.argv[4]
 
 print "NotarizeAndPollAppleServers.py: Starting notarization."
-uploadOutput = subprocess.check_output(['xcrun', 'altool', '--notarize-app', '--primary-bundle-id', bundleID, '-u', appleID, '-p', appSpecificPassword, '--file', appZipPath], stderr=subprocess.STDOUT)
+try:
+	uploadOutput = subprocess.check_output(['xcrun', '--verbose', '--log', 'altool', '--notarize-app', '--primary-bundle-id', bundleID, '-u', appleID, '-p', appSpecificPassword, '--file', appZipPath], stderr=subprocess.STDOUT)
+except Exception, e:
+	print "NotarizeAndPollAppleServers.py: Exception in notarization:"
+	print str(e)
+	exit(-2)
+	
 print "NotarizeAndPollAppleServers.py: upload output: "
 print uploadOutput
 
 requestIDIndex = uploadOutput.find("RequestUUID = ")
 if requestIDIndex == -1:
 	print "NotarizeAndPollAppleServers.py: Unable to upload for notarization."
-	exit(-2)
+	exit(-3)
 
 requestID = uploadOutput[requestIDIndex + len("RequestUUID = "):].strip()
 print "Request ID: ", requestID
@@ -39,7 +45,7 @@ print "NotarizeAndPollAppleServers.py: Upload succeeded.  Will poll for outcome 
 while True:
 	pollOutput = ""
 	try:
-		pollOutput = subprocess.check_output(['xcrun', 'altool', '--notarization-info', requestID, '-u', appleID, '-p', appSpecificPassword], stderr=subprocess.STDOUT)
+		pollOutput = subprocess.check_output(['xcrun', '--verbose', '--log', 'altool', '--notarization-info', requestID, '-u', appleID, '-p', appSpecificPassword], stderr=subprocess.STDOUT)
 		print "NotarizeAndPollAppleServers.py: poll output: "
 		print pollOutput
 		
@@ -60,7 +66,7 @@ while True:
 		# check for failed notarization
 		elif "fail" in pollOutput or "error" in pollOutputLower and not "in progress" in pollOutputLower:
 			print "NotarizeAndPollAppleServers.py: Notarization failed."
-			exit(-3)
+			exit(-4)
 			
 	except subprocess.CalledProcessError, cpe:
 		print "NotarizeAndPollAppleServers.py: Exception in polling:"
