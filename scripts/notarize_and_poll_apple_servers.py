@@ -10,14 +10,15 @@ import sys
 import time
 import urllib
 
-if len(sys.argv) != 5:
-	print "NotarizeAndPollAppleServers.py: need bundle, ID Apple ID, app password, and path to zip file."
+if len(sys.argv) != 6:
+	print "NotarizeAndPollAppleServers.py: need bundle ID, Apple ID, app password, polling time in minutes, and path to zip file."
 	exit(-1)
 
 bundleID = sys.argv[1]
 appleID = sys.argv[2]
 appSpecificPassword = sys.argv[3]
-appZipPath = sys.argv[4]
+pollMinutes = sys.argv[4]
+appZipPath = sys.argv[5]
 
 print "NotarizeAndPollAppleServers.py: Starting notarization."
 try:
@@ -39,7 +40,6 @@ requestID = uploadOutput[requestIDIndex + len("RequestUUID = "):].strip()
 print "Request ID: ", requestID
 
 # Every pollMinutes minutes we poll the Apple servers for a result.
-pollMinutes = 15
 print "NotarizeAndPollAppleServers.py: Upload succeeded.  Will poll for outcome every ", pollMinutes, " minutes."
 
 while True:
