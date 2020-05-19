@@ -17,7 +17,7 @@ if len(sys.argv) != 6:
 bundleID = sys.argv[1]
 appleID = sys.argv[2]
 appSpecificPassword = sys.argv[3]
-pollMinutes = sys.argv[4]
+pollMinutes = float(sys.argv[4])
 appZipPath = sys.argv[5]
 
 print "NotarizeAndPollAppleServers.py: Starting notarization."
