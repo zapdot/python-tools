@@ -21,8 +21,18 @@ pollMinutes = float(sys.argv[4])
 appZipPath = sys.argv[5]
 
 print "NotarizeAndPollAppleServers.py: Starting notarization."
+
 try:
 	uploadOutput = subprocess.check_output(['xcrun', '--verbose', '--log', 'altool', '--notarize-app', '--primary-bundle-id', bundleID, '-u', appleID, '-p', appSpecificPassword, '--file', appZipPath], stderr=subprocess.STDOUT)
+
+except subprocess.CalledProcessError, cpe:
+	print "NotarizeAndPollAppleServers.py: Exception in notarization:"
+	print str(cpe)
+	print "Output of command:"
+	print cpe.output
+	print "STDOUT:"
+	print cpe.stdout
+
 except Exception, e:
 	print "NotarizeAndPollAppleServers.py: Exception in notarization:"
 	print str(e)
